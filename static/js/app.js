@@ -1,39 +1,38 @@
 // from data.js
 var tableData = data;
 
-// Reassign the node to submit variable 
-const submit = d3.select("#filter-btn")
+// get table references
+var tbody = d3.select("tbody");
 
-submit.on("click", function() {
+// Attach an event to listen for the form button
+d3.selectAll("#filter-btn").on("click", function() {
 
-    d3.event.preventDefault()
-    
-     // Select the input element, value, and fix minor key issues and get the raw HTML node 
-    const inptValDate = d3.select("#datetime").property("value")
-   
-    const tbody = d3.select("tbody")
+  // Prevent the form from refreshing the page
+  d3.event.preventDefault();
 
-    // Reset the webpage afer each click
-    tbody.html("")
+  // Getting the datetime value from the filter
+  var date = d3.select("#datetime").property("value");
+  let filteredData = tableData;
 
-    // Assing an empty dict for filter parameters
-    var inptFilter = {}
-    
-    if (inptValDate !== ""){
-        inptFilter["datetime"] = inptValDate
-    }
-     const ufoData = tableData.filter(val => {
-        for (key in inptFilter) {
-            if (val[key] === undefined || val[key] != inptFilter[key])
-                return false
-            }
-                return true
-          })
+  // Checking and filtering data using dates
+  if (date) {
+    // Keeping rows where the `datetime` value matches the filter value
+    filteredData = filteredData.filter(row => row.datetime === date);
+  }
 
-      ufoData.forEach(val => {
-        const row = tbody.append('tr')
-        for (key in val) {
-            row.append('td').text(val[key])
-          }
-    })   
-}) 
+  // Clearing existing data
+  tbody.html("");
+
+  // Loop through each object, and append a row and cells for each value
+  data.forEach((tableRow) => {
+    // Append a row to the table body
+    var row = tbody.append("tr");
+
+    // Loop in the tableRow and add each value as a table cell (td)
+    Object.values(tableRow).forEach((val) => {
+      var cell = row.append("td");
+        cell.text(val);
+      }
+    );
+  });
+})
